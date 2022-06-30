@@ -44,4 +44,18 @@ orderSchema.virtual('orderTotal').get(function () {
     return this.id.slice(-6).toUpperCase();
   });
 
+  // statics are callable on the mode, not an instance (document)
+  orderSchema.statics.getcart = function(userId) {
+    // "this" is bound to the model so don't use arrow functions
+    // return the promise that resolves to a cart. (the user's unpaid order)
+    return this.findOneAndUpdate(
+        // query
+        { user: userId, isPaid: false },
+        // update - in the case order (cart) is upserted
+        { user: userId },
+        // upsert option created the doc if it doesn't exist!
+        { upsert: true, new: true }
+    )
+  }
+
 module.exports = mongoose.model("Order", orderSchema)
