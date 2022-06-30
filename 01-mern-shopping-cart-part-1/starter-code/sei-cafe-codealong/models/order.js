@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 const { virtuals } = require("./itemSchema")
-const Schema = new Schema
+const Schema = mongoose.Schema
 // Require the itemSchema below 
 const itemSchema = require("./itemSchema")
 
@@ -45,7 +45,7 @@ orderSchema.virtual('orderTotal').get(function () {
   });
 
   // statics are callable on the mode, not an instance (document)
-  orderSchema.statics.getcart = function(userId) {
+  orderSchema.statics.getCart = function(userId) {
     // "this" is bound to the model so don't use arrow functions
     // return the promise that resolves to a cart. (the user's unpaid order)
     return this.findOneAndUpdate(

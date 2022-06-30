@@ -35,7 +35,7 @@ export default function NewOrderPage({ user, setUser }) {
     getItems();
 
     // Load cart (a cart is the unpaid order fro the logged in user)
-    const getcart = async () => {
+    async function getCart(){
       const cart = await ordersAPI.getCart()
       setCart(cart)
     }
