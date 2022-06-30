@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
-const { virtuals } = require("./itemSchema")
 const Schema = mongoose.Schema
+const { virtuals } = require("./itemSchema")
 // Require the itemSchema below 
 const itemSchema = require("./itemSchema")
 
