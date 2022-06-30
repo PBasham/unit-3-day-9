@@ -24,6 +24,9 @@ const orderSchema = new Schema({
   toJSON: { virtuals: true }
 });
 
+/*========================================
+        Model virtuals
+========================================*/
 orderSchema.virtual('orderTotal').get(function() {
   return this.lineItems.reduce((total, item) => total + item.extPrice, 0);
 });
@@ -36,6 +39,9 @@ orderSchema.virtual('orderId').get(function() {
   return this.id.slice(-6).toUpperCase();
 });
 
+/*========================================
+        Model Statics
+========================================*/
 orderSchema.statics.getCart = function(userId) {
   // 'this' is the Order model
   return this.findOneAndUpdate(
@@ -47,6 +53,29 @@ orderSchema.statics.getCart = function(userId) {
     // upsert options 
     { upsert: true, new: true }
   );
+};
+
+/*========================================
+        Model Methods
+========================================*/
+// Instance method for adding an item to a cart (unpaid order)
+orderSchema.methods.addItemToCart = async function (itemId) {
+  // this keyword is bound to the cart (order doc)
+  const cart = this;
+  // Check if the item already exists in the cart
+  const lineItem = cart.lineItems.find(lineItem => lineItem.item._id.equals(itemId));
+  if (lineItem) {
+    // It already exists, so increase the qty
+    lineItem.qty += 1;
+  } else {
+    // Get the item from the "catalog"
+    // Note how the mongoose.model method behaves as a getter when passed one arg vs. two
+    const item = await mongoose.model('Item').findById(itemId);
+    // The qty of the new lineItem object being pushed in defaults to 1
+    cart.lineItems.push({ item });
+  }
+  // return the save() method's promise
+  return cart.save();
 };
 
 module.exports = mongoose.model('Order', orderSchema);
